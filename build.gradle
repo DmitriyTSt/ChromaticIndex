@@ -1,0 +1,31 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.20'
+    id 'java'
+}
+
+version '1.0'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'DCS Task Chromatic index',
+                'Implementation-Version': project.version
+    }
+    archiveFileName.set("ChromaticIndexGraphTask.jar")
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+    implementation "com.github.DmitriyTSt:dcs-core:1.1"
+}
+
+test {
+    useJUnitPlatform()
+}
