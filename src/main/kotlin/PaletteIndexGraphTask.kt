@@ -9,14 +9,14 @@ class PaletteIndexGraphTask : GraphInvariant {
     override fun solve(graph6: String): Int {
         val graph = Graph.fromGraph6(graph6)
         val (delta, maxDegVertex) = graph.maxDeg()
-//        prepareGraphColoring(graph, maxDegVertex)
+        prepareGraphColoring(graph, maxDegVertex)
         isDeltaColored(delta, 0, graph.edges.filter { !it.hasColor() }, graph)
         return minPaletteIndex
     }
 
     private fun prepareGraphColoring(graph: Graph, maxDegVertex: Int) {
         graph.edges.filter { it.hasVertex(maxDegVertex) }.forEachIndexed { index, edge ->
-            edge.color = index
+            edge.color = index + 1
         }
     }
 
@@ -37,7 +37,7 @@ class PaletteIndexGraphTask : GraphInvariant {
         }
         var isDeltaColored = false
         for (color in 1..delta) {
-            if (hasNoNeighboursWithSimilarColor(edges, edgeIndex, color)) {
+            if (hasNoNeighboursWithSimilarColor(edges, edgeIndex, color, graph)) {
                 setColor(edges, edgeIndex, color)
                 val result = isDeltaColored(delta, edgeIndex + 1, edges, graph)
                 if (result.isDeltaColored) {
@@ -55,9 +55,9 @@ class PaletteIndexGraphTask : GraphInvariant {
         )
     }
 
-    private fun hasNoNeighboursWithSimilarColor(edges: List<Edge>, edgeIndex: Int, color: Int): Boolean {
+    private fun hasNoNeighboursWithSimilarColor(edges: List<Edge>, edgeIndex: Int, color: Int, graph: Graph): Boolean {
         val currentEdge = edges[edgeIndex]
-        for (edge in edges.filter { it.color == color }) {
+        for (edge in graph.edges.filter { it.color == color }) {
             if (currentEdge.isAdjacent(edge)) {
                 return false
             }
