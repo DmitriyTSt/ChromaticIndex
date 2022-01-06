@@ -4,16 +4,17 @@ import ru.dmitriyt.dcs.core.GraphInvariant
  * Хроматический индекс
  */
 class PaletteIndexGraphTask : GraphInvariant {
-    private var minPaletteIndex = Int.MAX_VALUE
+    private var minPaletteIndex = ThreadLocal.withInitial { Int.MAX_VALUE }
 
     override fun solve(graph6: String): Int {
+        minPaletteIndex.set(Int.MAX_VALUE)
         val graph = Graph.fromGraph6(graph6)
         val (delta, maxDegVertex) = graph.maxDeg()
         prepareGraphColoring(graph, maxDegVertex)
         if (!isDeltaColored(delta, 0, graph.edges.filter { !it.hasColor() }, graph).isDeltaColored) {
             isDeltaColored(delta + 1, 0, graph.edges.filter { !it.hasColor() }, graph)
         }
-        return minPaletteIndex
+        return minPaletteIndex.get()
     }
 
     private fun prepareGraphColoring(graph: Graph, maxDegVertex: Int) {
@@ -32,8 +33,8 @@ class PaletteIndexGraphTask : GraphInvariant {
         if (edgeIndex == edges.size) {
             // правильная расскраска, посчитаем индекс палитры
             val currentPaletteIndex = paletteIndex(graph)
-            if (currentPaletteIndex < minPaletteIndex) {
-                minPaletteIndex = currentPaletteIndex
+            if (currentPaletteIndex < minPaletteIndex.get()) {
+                minPaletteIndex.set(currentPaletteIndex)
             }
             return DeltaColoredResult(isDeltaColored = true, runAlgo = true)
         }
