@@ -10,7 +10,9 @@ class PaletteIndexGraphTask : GraphInvariant {
         val graph = Graph.fromGraph6(graph6)
         val (delta, maxDegVertex) = graph.maxDeg()
         prepareGraphColoring(graph, maxDegVertex)
-        isDeltaColored(delta, 0, graph.edges.filter { !it.hasColor() }, graph)
+        if (!isDeltaColored(delta, 0, graph.edges.filter { !it.hasColor() }, graph).isDeltaColored) {
+            isDeltaColored(delta + 1, 0, graph.edges.filter { !it.hasColor() }, graph)
+        }
         return minPaletteIndex
     }
 
