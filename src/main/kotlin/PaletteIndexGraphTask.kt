@@ -19,6 +19,7 @@ class PaletteIndexGraphTask : GraphInvariant {
 
     private fun prepareGraphColoring(graph: Graph, maxDegVertex: Int) {
         graph.edges.filter { it.hasVertex(maxDegVertex) }.forEachIndexed { index, edge ->
+            graph.edgesByColor[index + 1] = mutableSetOf(edge)
             edge.color = index + 1
         }
     }
@@ -41,7 +42,7 @@ class PaletteIndexGraphTask : GraphInvariant {
         var isDeltaColored = false
         for (color in 1..delta) {
             if (hasNoNeighboursWithSimilarColor(edges, edgeIndex, color, graph)) {
-                setColor(edges, edgeIndex, color)
+                setColor(graph, edges, edgeIndex, color)
                 val result = isDeltaColored(delta, edgeIndex + 1, edges, graph)
                 if (result.isDeltaColored) {
                     isDeltaColored = true
@@ -50,7 +51,7 @@ class PaletteIndexGraphTask : GraphInvariant {
                     return result
                 }
             }
-            removeColor(edges, edgeIndex)
+            removeColor(graph, edges, edgeIndex, color)
         }
         return DeltaColoredResult(
             isDeltaColored = isDeltaColored,
@@ -60,7 +61,7 @@ class PaletteIndexGraphTask : GraphInvariant {
 
     private fun hasNoNeighboursWithSimilarColor(edges: List<Edge>, edgeIndex: Int, color: Int, graph: Graph): Boolean {
         val currentEdge = edges[edgeIndex]
-        for (edge in graph.edges.filter { it.color == color }) {
+        graph.edgesByColor[color]?.forEach { edge ->
             if (currentEdge.isAdjacent(edge)) {
                 return false
             }
@@ -73,12 +74,18 @@ class PaletteIndexGraphTask : GraphInvariant {
         val runAlgo: Boolean,
     )
 
-    private fun setColor(edges: List<Edge>, edgeIndex: Int, color: Int) {
-        edges[edgeIndex].color = color
+    private fun setColor(graph: Graph, edges: List<Edge>, edgeIndex: Int, color: Int) {
+        val edge = edges[edgeIndex]
+        edge.color = color
+        graph.edgesByColor[color]?.add(edge) ?: run {
+            graph.edgesByColor[color] = mutableSetOf(edges[edgeIndex])
+        }
     }
 
-    private fun removeColor(edges: List<Edge>, edgeIndex: Int) {
-        edges[edgeIndex].color = Edge.EMPTY_COLOR
+    private fun removeColor(graph: Graph, edges: List<Edge>, edgeIndex: Int, color: Int) {
+        val edge = edges[edgeIndex]
+        graph.edgesByColor[color]?.remove(edge)
+        edge.color = Edge.EMPTY_COLOR
     }
 
     private fun palette(graph: Graph, vertex: Int): Set<Int> {

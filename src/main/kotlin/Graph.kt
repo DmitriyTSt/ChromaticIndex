@@ -5,6 +5,8 @@
  * @param a - матрица смежности
  */
 class Graph(val n: Int, val m: Int, val a: Array<BooleanArray>, val edges: List<Edge>) {
+    val edgesByColor = mutableMapOf<Int, MutableSet<Edge>>()
+
     companion object {
 
         const val MAX_N = 20
