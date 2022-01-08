@@ -5,12 +5,25 @@ plugins {
 
 version '1.0'
 
+task "jarCI" {
+    doFirst {
+        jar.archiveFileName.set("ChromaticIndexGraphTask.jar")
+    }
+
+    finalizedBy jar
+}
+task "jarPI" {
+    doFirst {
+        jar.archiveFileName.set("PaletteIndexGraphTask.jar")
+    }
+    finalizedBy jar
+}
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'DCS Task Chromatic index',
                 'Implementation-Version': project.version
     }
-    archiveFileName.set("ChromaticIndexGraphTask.jar")
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
@@ -22,7 +35,6 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    implementation 'org.apache.commons:commons-collections4:4.4'
 
     implementation "com.github.DmitriyTSt:dcs-core:1.2"
 }
