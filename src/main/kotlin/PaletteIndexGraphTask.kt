@@ -1,21 +1,23 @@
 import ru.dmitriyt.dcs.core.GraphInvariant
-import kotlin.math.sqrt
 
 /**
  * Хроматический индекс
  */
 class PaletteIndexGraphTask : GraphInvariant {
+    companion object {
+        private const val COLOR_DELTA = 3
+    }
+
     private var minPaletteIndex = ThreadLocal.withInitial { Int.MAX_VALUE }
 
-    override val version = 3
+    override val version = 4
 
     override fun solve(graph6: String): Int {
         minPaletteIndex.set(Int.MAX_VALUE)
         val graph = Graph.fromGraph6(graph6)
         val (delta, maxDegVertex) = graph.maxDeg()
         prepareGraphColoring(graph, maxDegVertex)
-        val upperBound = delta + sqrt((graph.edges.size - delta).toFloat()).toInt()
-        for (cDelta in delta..upperBound) {
+        for (cDelta in delta..(delta + COLOR_DELTA)) {
             isDeltaColored(cDelta, 0, graph.edges.filter { !it.hasColor() }, graph)
         }
         return minPaletteIndex.get()
