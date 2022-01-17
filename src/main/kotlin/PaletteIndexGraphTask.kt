@@ -15,12 +15,21 @@ class PaletteIndexGraphTask : GraphInvariant {
     override fun solve(graph6: String): Int {
         minPaletteIndex.set(Int.MAX_VALUE)
         val graph = Graph.fromGraph6(graph6)
-        val (delta, maxDegVertex) = graph.maxDeg()
-        prepareGraphColoring(graph, maxDegVertex)
-        for (cDelta in delta..(delta + COLOR_DELTA)) {
-            isDeltaColored(cDelta, 0, graph.edges.filter { !it.hasColor() }, graph)
+        val isFullGraph = graph.n * (graph.n - 1) / 2 == graph.m
+        return if (isFullGraph) {
+            when {
+                graph.n % 2 == 0 || graph.n == 1 -> 1
+                graph.n % 4 == 3 -> 3
+                else -> 4
+            }
+        } else {
+            val (delta, maxDegVertex) = graph.maxDeg()
+            prepareGraphColoring(graph, maxDegVertex)
+            for (cDelta in delta..(delta + COLOR_DELTA)) {
+                isDeltaColored(cDelta, 0, graph.edges.filter { !it.hasColor() }, graph)
+            }
+            minPaletteIndex.get()
         }
-        return minPaletteIndex.get()
     }
 
     private fun prepareGraphColoring(graph: Graph, maxDegVertex: Int) {

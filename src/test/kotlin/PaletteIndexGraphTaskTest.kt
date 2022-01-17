@@ -15,6 +15,12 @@ class PaletteIndexGraphTaskTest {
         Assertions.assertEquals(4, chromaticIndex)
     }
     @Test
+    fun `Palette index of F~~~w should be 4`() {
+        val graph6 = "F~~~w"
+        val chromaticIndex = PaletteIndexGraphTask().solve(graph6)
+        Assertions.assertEquals(3, chromaticIndex)
+    }
+    @Test
     fun `Palette index of D?_ should be 2`() {
         val graph6 = "D?_"
         val chromaticIndex = PaletteIndexGraphTask().solve(graph6)
