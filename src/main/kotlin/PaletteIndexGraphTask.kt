@@ -9,6 +9,7 @@ class PaletteIndexGraphTask : GraphInvariant {
     }
 
     private var minPaletteIndex = ThreadLocal.withInitial { Int.MAX_VALUE }
+    private var minPaletteColorCount = ThreadLocal.withInitial { 0 }
 
     override val version = 4
 
@@ -28,7 +29,7 @@ class PaletteIndexGraphTask : GraphInvariant {
             for (cDelta in delta..(delta + COLOR_DELTA)) {
                 isDeltaColored(cDelta, 0, graph.edges.filter { !it.hasColor() }, graph)
             }
-            minPaletteIndex.get()
+            minPaletteIndex.get() + 1000 * minPaletteColorCount.get()
         }
     }
 
@@ -51,6 +52,7 @@ class PaletteIndexGraphTask : GraphInvariant {
             val currentPaletteIndex = paletteIndex(graph)
             if (currentPaletteIndex < minPaletteIndex.get()) {
                 minPaletteIndex.set(currentPaletteIndex)
+                minPaletteColorCount.set(graph.edges.map { it.color }.toSet().size)
             }
             return DeltaColoredResult(isDeltaColored = true, runAlgo = true)
         }

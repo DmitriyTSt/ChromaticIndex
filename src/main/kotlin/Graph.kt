@@ -48,18 +48,4 @@ class Graph(val n: Int, val m: Int, val a: Array<BooleanArray>, val edges: List<
         val vertex = a.indexOfFirst { row -> row.count { it } == maxDeg }
         return MaxDeg(maxDeg, vertex)
     }
-
-    /**
-     * Получить ребро
-     */
-    private fun getEdge(i: Int, j: Int): Pair<Int, Int> {
-        return if (i > j) j to i else i to j
-    }
-
-    /**
-     * Смежные ли ребра
-     */
-    private fun isAdjacentEdge(a: Pair<Int, Int>, b: Pair<Int, Int>): Boolean {
-        return a.first == b.first || a.first == b.second || a.second == b.first || a.second == b.second
-    }
 }
